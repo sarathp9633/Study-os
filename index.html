@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>StudyOS — Study Tracker v2</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--soft:#eef2f7;--accent:#111827;--danger:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.dark{--bg:#0b0f14;--card:#121820;--text:#f3f4f6;--muted:#9ca3af;--line:#26303b;--soft:#1b2430;--accent:#f3f4f6;--danger:#fca5a5}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}.side{background:var(--card);border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh}
+.logo{font-size:21px;font-weight:850;padding:0 10px 25px}.logo span{font-weight:500;color:var(--muted)}
+nav button{width:100%;text-align:left;background:transparent;color:var(--text);margin:3px 0;padding:11px 12px;border-radius:10px;font-weight:700}nav button.active,nav button:hover{background:var(--soft)}
+.main{max-width:1200px;width:100%;margin:auto;padding:25px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.top h1{margin:0;font-size:27px}.top p{margin:4px 0 0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:var(--bg);font-weight:750;cursor:pointer}button.secondary{background:var(--soft);color:var(--text)}button.danger{background:#fee2e2;color:var(--danger)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}.label{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}.stat{font-size:27px;font-weight:850;margin-top:6px}.section{margin-top:14px}.section h2{font-size:18px;margin:0 0 13px}
+.timer{text-align:center;padding:27px}.clock{font-size:64px;font-weight:850;letter-spacing:2px;font-variant-numeric:tabular-nums}.timer-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:15px 0}
+.form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;text-align:left}.form .full{grid-column:1/-1}
+input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit}
+.progress{height:10px;background:var(--soft);border-radius:99px;overflow:hidden;margin-top:10px}.bar{height:100%;background:var(--accent);width:0;transition:.25s}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.chart{height:190px;display:flex;align-items:end;gap:8px;padding:20px 5px 0}.day{flex:1;height:100%;display:flex;flex-direction:column;justify-content:end;text-align:center;color:var(--muted);font-size:11px}.stick{width:100%;min-height:3px;background:var(--accent);border-radius:6px 6px 2px 2px}.day span{padding-top:7px}
+.subject-row{display:flex;align-items:center;gap:10px;margin:12px 0}.subject-row .name{width:110px;font-size:13px}.mini{height:9px;flex:1;background:var(--soft);border-radius:99px;overflow:hidden}.mini div{height:100%;background:var(--accent)}.subject-row b{font-size:12px;width:55px;text-align:right}
+table{width:100%;border-collapse:collapse}th,td{padding:11px 7px;border-bottom:1px solid var(--line);font-size:13px;text-align:left}th{color:var(--muted)}
+.view{display:none}.view.active{display:block}.empty{color:var(--muted);text-align:center;padding:28px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.cal-head{text-align:center;color:var(--muted);font-size:12px;padding:6px}.cal-cell{min-height:65px;border:1px solid var(--line);border-radius:9px;padding:7px;background:var(--card);font-size:12px}.cal-cell.today{outline:2px solid var(--accent)}.cal-cell .mins{color:var(--muted);margin-top:5px}.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.open{display:flex}.modal-box{max-width:520px;width:100%;background:var(--card);border-radius:16px;padding:20px;border:1px solid var(--line)}.modal-box h2{margin-top:0}.settings-row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:14px 0}
+@media(max-width:850px){.app{display:block}.side{height:auto;position:sticky;z-index:5;top:0;border-right:0;border-bottom:1px solid var(--line);padding:10px}.logo{display:inline-block;padding:8px 10px}.side nav{display:flex;overflow:auto;gap:5px}.side nav button{width:auto;white-space:nowrap}.main{padding:13px}.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.form{grid-template-columns:1fr}.clock{font-size:46px}.top{align-items:flex-start}.cal-cell{min-height:55px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+<div class="logo">StudyOS <span>v2</span></div>
+<nav>
+<button class="active" data-view="dashboard">🏠 Dashboard</button>
+<button data-view="history">📚 History</button>
+<button data-view="calendar">📅 Calendar</button>
+<button data-view="analytics">📊 Analytics</button>
+<button data-view="goals">🎯 Goals</button>
+<button data-view="settings">⚙️ Settings</button>
+</nav>
+</aside>
+<main class="main">
+<div class="top"><div><h1 id="pageTitle">Dashboard</h1><p id="dateLine"></p></div><div class="actions"><button class="secondary" onclick="toggleDark()">◐ Theme</button><button id="notifyBtn" class="secondary" onclick="enableNotifications()">🔔 Notifications</button><button id="installBtn" class="secondary" onclick="installApp()" style="display:none">📲 Install</button><button class="secondary" onclick="exportCSV()">Export</button></div></div>
+
+<section id="dashboard" class="view active">
+<div class="grid">
+<div class="card"><div class="label">Today</div><div class="stat" id="today"></div></div>
+<div class="card"><div class="label">This Week</div><div class="stat" id="week"></div></div>
+<div class="card"><div class="label">This Month</div><div class="stat" id="month"></div></div>
+<div class="card"><div class="label">Streak</div><div class="stat" id="streak"></div></div>
+</div>
+<div class="card timer section">
+<div class="label">Study Timer</div><div class="clock" id="clock">00:00:00</div>
+<div class="timer-controls"><button id="startBtn" onclick="startTimer()">▶ Start</button><button id="pauseBtn" class="secondary" onclick="pauseTimer()" disabled>Pause</button><button id="resetBtn" class="secondary" onclick="resetTimer()">Reset</button><button id="saveBtn" class="danger" onclick="saveTimer()" disabled>Stop & Save</button></div>
+<div class="form">
+<select id="subject"></select><input id="topic" placeholder="Topic / chapter"><select id="mode"><option value="stopwatch">Stopwatch</option><option value="25">Pomodoro 25 / 5</option><option value="50">Pomodoro 50 / 10</option></select>
+</div></div>
+<div class="card section"><h2>Daily Target</h2><div style="display:flex;justify-content:space-between"><b id="targetText"></b><span class="muted">Goal</span></div><div class="progress"><div class="bar" id="targetBar"></div></div></div>
+<div class="two section"><div class="card"><h2>Last 7 Days</h2><div class="chart" id="weekChart"></div></div><div class="card"><h2>Subjects This Month</h2><div id="subjectStats"></div></div></div>
+</section>
+
+<section id="history" class="view"><div class="card"><h2>Study History</h2><div style="display:flex;gap:8px;margin-bottom:12px"><input id="search" placeholder="Search subject or topic" oninput="renderHistory()"><select id="filterSubject" onchange="renderHistory()"><option value="">All subjects</option></select></div><div style="overflow:auto"><table><thead><tr><th>Date</th><th>Subject</th><th>Topic</th><th>Duration</th><th>Actions</th></tr></thead><tbody id="historyBody"></tbody></table></div></div></section>
+
+<section id="calendar" class="view"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="calTitle"></h2><div><button class="secondary" onclick="changeMonth(-1)">←</button> <button class="secondary" onclick="changeMonth(1)">→</button></div></div><div class="calendar" id="calendarGrid"></div></div></section>
+
+<section id="goals" class="view">
+<div class="card">
+<h2>Study Goals</h2>
+<div class="form" style="margin-bottom:14px">
+<input id="goalName" placeholder="Goal, e.g. Finish Current Electricity">
+<select id="goalSubject"></select>
+<input id="goalDeadline" type="date">
+<input id="goalMinutes" type="number" min="1" placeholder="Target minutes">
+<button onclick="addGoal()">Add Goal</button>
+</div>
+<div id="goalsList"></div>
+</div>
+</section>
+
+<section id="analytics" class="view"><div class="grid"><div class="card"><div class="label">Total Study</div><div class="stat" id="allTime"></div></div><div class="card"><div class="label">Sessions</div><div class="stat" id="sessionCount"></div></div><div class="card"><div class="label">Average Session</div><div class="stat" id="avgSession"></div></div><div class="card"><div class="label">Best Day</div><div class="stat" id="bestDay"></div></div></div><div class="card section"><h2>Subject Breakdown</h2><div id="analyticsSubjects"></div></div></section>
+
+<section id="settings" class="view"><div class="card"><h2>Settings & Backup</h2>
+<div class="settings-row"><span>Daily target (hours)</span><input id="targetInput" type="number" min="1" max="24" style="width:110px"></div>
+<div class="settings-row"><span>Manage subjects</span><button class="secondary" onclick="openSubjects()">Edit</button></div>
+<div class="settings-row"><span>Import CSV backup</span><input type="file" id="fileInput" accept=".csv" onchange="importCSV(event)" style="max-width:210px"></div>
+<div class="settings-row"><span>Clear all data</span><button class="danger" onclick="clearAll()">Delete everything</button></div>
+<p class="muted">Your records are stored only in this browser. Export regularly if the data is important.</p>
+</div></section>
+</main></div>
+
+<div class="modal" id="modal"><div class="modal-box"><h2>Subjects</h2><div id="subjectEditor"></div><div style="display:flex;gap:8px;margin-top:12px"><input id="newSubject" placeholder="New subject"><button onclick="addSubject()">Add</button></div><div style="text-align:right;margin-top:18px"><button class="secondary" onclick="closeModal()">Close</button></div></div></div>
+
+<script>
+const defaultSubjects=['Physics','Chemistry','Mathematics','PSC','Biology','English','Other'];
+let subjects=JSON.parse(localStorage.getItem('studySubjects')||JSON.stringify(defaultSubjects));
+let sessions=JSON.parse(localStorage.getItem('studySessions')||'[]');
+let target=Number(localStorage.getItem('studyTarget')||4);
+let elapsed=0,startedAt=0,running=false,timerId=null,calDate=new Date();
+
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem('studySessions',JSON.stringify(sessions));localStorage.setItem('studySubjects',JSON.stringify(subjects));localStorage.setItem('studyTarget',target)}
+function key(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function parseKey(k){let [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)}
+function fmt(sec){sec=Math.max(0,Math.floor(sec));let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return [h,m,s].map(x=>String(x).padStart(2,'0')).join(':')}
+function nice(sec){let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60);if(h)return h+'h '+m+'m';return m?m+'m':Math.round(sec)+'s'}
+function total(fn){return sessions.filter(fn).reduce((a,x)=>a+Number(x.duration),0)}
+function populate(){let old=$('subject').value; $('subject').innerHTML=subjects.map(s=>`<option>${esc(s)}</option>`).join('');if(subjects.includes(old))$('subject').value=old;$('filterSubject').innerHTML='<option value="">All subjects</option>'+subjects.map(s=>`<option>${esc(s)}</option>`).join('')}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]) )}
+function startTimer(){if(running)return;running=true;startedAt=Date.now()-elapsed*1000;timerId=setInterval(tick,250);$('startBtn').disabled=true;$('pauseBtn').disabled=false;$('saveBtn').disabled=false}
+function tick(){elapsed=(Date.now()-startedAt)/1000;$('clock').textContent=fmt(elapsed)}
+function pauseTimer(){if(!running)return;running=false;clearInterval(timerId);elapsed=(Date.now()-startedAt)/1000;$('startBtn').disabled=false;$('pauseBtn').disabled=true}
+function resetTimer(){running=false;clearInterval(timerId);elapsed=0;$('clock').textContent='00:00:00';$('startBtn').disabled=false;$('pauseBtn').disabled=true;$('saveBtn').disabled=true}
+function saveTimer(){if(running)pauseTimer();if(elapsed<1)return;sessions.unshift({id:Date.now(),date:key(),subject:$('subject').value,topic:$('topic').value.trim(),duration:Math.round(elapsed)});save();$('topic').value='';resetTimer();renderAll()}
+function streak(){let n=0;for(let i=0;;i++){let d=new Date();d.setDate(d.getDate()-i);if(total(x=>x.date===key(d))>0)n++;else break}return n}
+function renderDash(){let now=new Date(),todayKey=key(),month=key().slice(0,7);let t=total(x=>x.date===todayKey),w=total(x=>{let d=parseKey(x.date),start=new Date();start.setHours(0,0,0,0);return (start-d)/86400000>=0&&(start-d)/86400000<7}),m=total(x=>x.date.startsWith(month));$('today').textContent=nice(t);$('week').textContent=nice(w);$('month').textContent=nice(m);$('streak').textContent=streak()+'d';$('targetText').textContent=nice(t)+' / '+target+'h';$('targetBar').style.width=Math.min(100,t/(target*3600)*100)+'%';
+let vals=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);vals.push(total(x=>x.date===key(d)))}let max=Math.max(...vals,3600);$('weekChart').innerHTML=vals.map((v,i)=>{let d=new Date();d.setDate(d.getDate()-(6-i));return `<div class="day"><div style="flex:1;display:flex;align-items:end"><div class="stick" style="height:${Math.max(3,v/max*125)}px" title="${nice(v)}"></div></div><span>${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]}</span></div>`}).join('');
+let map={};sessions.filter(x=>x.date.startsWith(month)).forEach(x=>map[x.subject]=(map[x.subject]||0)+x.duration);let arr=Object.entries(map).sort((a,b)=>b[1]-a[1]);let mx=arr[0]?.[1]||1;$('subjectStats').innerHTML=arr.length?arr.map(([s,v])=>`<div class="subject-row"><span class="name">${esc(s)}</span><div class="mini"><div style="width:${v/mx*100}%"></div></div><b>${nice(v)}</b></div>`).join(''):'<div class="empty">No data this month.</div>'}
+function renderHistory(){let q=($('search').value||'').toLowerCase(),f=$('filterSubject').value;let a=sessions.filter(x=>(!f||x.subject===f)&&((x.subject+' '+x.topic).toLowerCase().includes(q)));$('historyBody').innerHTML=a.length?a.map(x=>`<tr><td>${x.date}</td><td>${esc(x.subject)}</td><td>${esc(x.topic||'—')}</td><td>${nice(x.duration)}</td><td><button class="secondary" onclick="editSession(${x.id})">Edit</button> <button class="danger" onclick="delSession(${x.id})">Delete</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">No matching sessions.</td></tr>'}
+function delSession(id){if(confirm('Delete this study session?')){sessions=sessions.filter(x=>x.id!==id);save();renderAll()}}
+function editSession(id){let x=sessions.find(x=>x.id===id);if(!x)return;let d=prompt('Duration in minutes:',Math.round(x.duration/60));if(d===null)return;d=Number(d);if(!d||d<1)return alert('Enter a valid duration.');x.duration=Math.round(d*60);x.topic=prompt('Topic:',x.topic)||'';save();renderAll()}
+function changeMonth(n){calDate.setMonth(calDate.getMonth()+n);renderCalendar()}
+function renderCalendar(){let y=calDate.getFullYear(),m=calDate.getMonth();$('calTitle').textContent=calDate.toLocaleString(undefined,{month:'long',year:'numeric'});let first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();let out=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(x=>`<div class="cal-head">${x}</div>`).join('');for(let i=0;i<first;i++)out+='<div></div>';for(let d=1;d<=days;d++){let dt=new Date(y,m,d),k=key(dt),v=total(x=>x.date===k);out+=`<div class="cal-cell ${k===key()?'today':''}"><b>${d}</b><div class="mins">${v?nice(v):''}</div></div>`}$('calendarGrid').innerHTML=out}
+function renderAnalytics(){let all=total(()=>true);$('allTime').textContent=nice(all);$('sessionCount').textContent=sessions.length;let avg=sessions.length?all/sessions.length:0;$('avgSession').textContent=nice(avg);let map={};sessions.forEach(x=>map[x.date]=(map[x.date]||0)+x.duration);let best=Object.entries(map).sort((a,b)=>b[1]-a[1])[0];$('bestDay').textContent=best?nice(best[1]):'—';let sm={};sessions.forEach(x=>sm[x.subject]=(sm[x.subject]||0)+x.duration);let ar=Object.entries(sm).sort((a,b)=>b[1]-a[1]),mx=ar[0]?.[1]||1;$('analyticsSubjects').innerHTML=ar.length?ar.map(([s,v])=>`<div class="subject-row"><span class="name">${esc(s)}</span><div class="mini"><div style="width:${v/mx*100}%"></div></div><b>${nice(v)}</b></div>`).join(''):'<div class="empty">No study data yet.</div>'}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$(v).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('pageTitle').textContent=v[0].toUpperCase()+v.slice(1);if(v==='history')renderHistory();if(v==='calendar')renderCalendar();if(v==='analytics')renderAnalytics()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function toggleDark(){document.body.classList.toggle('dark');localStorage.setItem('studyDark',document.body.classList.contains('dark'))}
+function exportCSV(){let rows=[['Date','Subject','Topic','Duration (minutes)'],...sessions.map(x=>[x.date,x.subject,x.topic,Math.round(x.duration/60)])];let blob=new Blob([rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n')],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='studyos-backup.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function importCSV(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let lines=r.result.split(/\r?\n/).slice(1),added=0;for(let line of lines){let p=line.match(/"((?:[^"]|"")*)"/g);if(!p||p.length<4)continue;let v=p.map(x=>x.slice(1,-1).replaceAll('""','"'));let mins=Number(v[3]);if(v[0]&&v[1]&&mins>0){sessions.push({id:Date.now()+added,date:v[0],subject:v[1],topic:v[2],duration:mins*60});added++}}save();renderAll();alert(`Imported ${added} sessions.`)};r.readAsText(f)}
+function clearAll(){if(confirm('This will permanently delete all study records in this browser. Continue?')){sessions=[];save();renderAll()}}
+function openSubjects(){$('modal').classList.add('open');renderSubjects()}
+function closeModal(){$('modal').classList.remove('open');populate()}
+function renderSubjects(){$('subjectEditor').innerHTML=subjects.map((s,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span>${esc(s)}</span>${subjects.length>1?`<button class="danger" onclick="removeSubject(${i})">Remove</button>`:''}</div>`).join('')}
+function addSubject(){let s=$('newSubject').value.trim();if(!s)return;if(!subjects.includes(s))subjects.push(s);$('newSubject').value='';save();renderSubjects()}
+function removeSubject(i){let s=subjects[i];if(confirm(`Remove "${s}" from the subject list? Existing records remain.`)){subjects.splice(i,1);save();renderSubjects()}}
+$('targetInput').value=target;$('targetInput').onchange=e=>{target=Math.max(1,Math.min(24,Number(e.target.value)||4));save();renderAll()}
+function renderAll(){populate();renderDash();renderHistory();renderAnalytics();renderCalendar();$('dateLine').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+if(localStorage.getItem('studyDark')==='true')document.body.classList.add('dark');renderAll();
+</script>
+</body>
+</html>
